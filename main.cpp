@@ -210,7 +210,7 @@ int main()
 
     glm::mat4 projection = glm::perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 //Geometry
-Geometry quad = Geometry("QUAD");
+    Geometry quad = Geometry("QUAD");
 
 //Terrain
 
@@ -221,6 +221,8 @@ Terrain plane(10,10);
     shader.use();
     glUniform1i(glGetUniformLocation(shader.ID, "diffuse_0"), 0);
     glUniform1i(glGetUniformLocation(shader.ID, "emissionMap0"), 1);
+    planeShader.use();
+    glUniform1i(glGetUniformLocation(planeShader.ID, "diffuse_0"), 0);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -285,8 +287,8 @@ Terrain plane(10,10);
         shader.setMat4("model",model);
         glBindVertexArray(quad.getVAO());
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,cubeT);
-        glDrawArrays(GL_TRIANGLES,0,6);
+        glBindTexture(GL_TEXTURE_2D,cubeT);        
+        //glDrawArrays(GL_TRIANGLES,0,6);
 
         //modelShader.use();
         //Models  

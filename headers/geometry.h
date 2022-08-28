@@ -4,23 +4,25 @@
 #include <glad/glad.h>
 #include<glfw/glfw3.h>
 #include<glm/glm/glm.hpp>
-
+#include "utils.h"
 
 const float quad[] ={
-    -0.5f,0.5f,0.0f,0.0f,1.0f,
-    -0.5f,0.0f,0.0f,0.0f,0.0f,
-    0.5f,0.5f,0.0f,1.0f,1.0f,
-    0.5f,0.5f,0.0f, 1.0f,1.0f,
-    -0.5f,0.0f,0.0f, 0.0f,0.0f,
-    0.5f,0.0f,0.0f, 1.0f,0.0f
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+        1.0f,  0.5f,  0.0f,  1.0f,  0.0f
 };
 
 class Geometry{
     private:
         unsigned int VAO;
-        unsigned int BAO;
+        unsigned int BAO,textureID;
         int sizeBuffer;
         const float* buffer_ptr;
+        bool haveTextures = false;
 
         void loadGeometry(const char* type){
             if(type=="QUAD"){
@@ -44,13 +46,36 @@ class Geometry{
             glBindVertexArray(0);
         };
         
+        
     public:
         Geometry(const char* type){
             loadGeometry(type);
         };    
+        
+        Geometry(std::string type){
+            loadGeometry(type.c_str());
+        }
+
+        void initTextures(const char* texture){
+            textureID = UTIL::loadTexture(texture);
+            if(textureID) haveTextures=true;
+
+        }
 
         unsigned int getVAO(){
             return VAO;
+        }
+
+        unsigned int getTextureId(){
+            return textureID;
+        }
+
+        void draw(){
+            glBindVertexArray(VAO);
+            
+            glBindTexture(GL_TEXTURE_2D,textureID);
+            
+            glDrawArrays(GL_TRIANGLES,0,6);
         }
 };
 
