@@ -5,6 +5,7 @@
 #include<glfw/glfw3.h>
 #include<glm/glm/glm.hpp>
 #include "utils.h"
+#include "shader.h"
 
 const float quad[] ={
         0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
@@ -76,6 +77,22 @@ class Geometry{
             glBindTexture(GL_TEXTURE_2D,textureID);
             
             glDrawArrays(GL_TRIANGLES,0,6);
+        }
+        
+        void draw(Shader &shader){
+            shader.use();
+
+            glBindVertexArray(VAO);
+            
+            glBindTexture(GL_TEXTURE_2D,textureID);
+            
+            glDrawArrays(GL_TRIANGLES,0,6);
+        }
+
+        void drawInstanced(int instances){
+            glBindVertexArray(VAO);
+            glBindTexture(GL_TEXTURE_2D,textureID);
+            glDrawArraysInstanced(GL_TRIANGLES,0,6,instances);
         }
 };
 

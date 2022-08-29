@@ -8,9 +8,10 @@
 #include<glm/glm/gtc/matrix_transform.hpp>
 #include<vector>
 #include "geometry.h"
+#include "shader.h"
 
 struct Biome{
-    std::vector<float> grassBuffer;
+    std::vector<glm::vec3> grassBuffer;
     std::vector<float> rockBuffer;
     std::vector<float> flowerBuffer;
 };
@@ -22,7 +23,7 @@ class Terrain{
         std::vector<unsigned int> indices;
         int height,width;
         unsigned int VAO,BAO,EBO;
-        Biome biomebuffers;
+        Biome biome;
         Geometry quad = Geometry("QUAD");
         bool renderBiomes = true;
 
@@ -34,9 +35,7 @@ class Terrain{
                 }
             }
 
-            for(int n:indices){
-                std::cout<<n;
-            }
+           
         }
 
         void loadMap(const char* map){
@@ -55,16 +54,27 @@ class Terrain{
             std::cout<<width<<"-"<<height;
             
             planeTerrain();
-            quad.initTextures("assets/window.png");
+            quad.initTextures("assets/grass.png");
         }
 
         
-        void draw(){
+        void draw(Shader &shader){
+            shader.use();
             glBindVertexArray(VAO);
 
             glDrawElements(GL_TRIANGLE_STRIP,indices.size(),GL_UNSIGNED_INT,0);
             if(renderBiomes){
-                quad.draw();
+                
+                int n = biome.grassBuffer.size();
+                for(int i=0;i<n;i++){
+                    glm::mat4 model = glm::mat4(1.0f);
+                    model = glm::translate(model,biome.grassBuffer[i]);
+                    model = glm::translate(model,glm::vec3(0.0f,0.5f,0.0f));
+                    shader.setMat4("model",model);
+                    quad.draw();
+                }
+                
+                
             }
         }
 
@@ -97,6 +107,7 @@ class Terrain{
 
             for(int i=0;i<height;i++){
                 float u,v;
+                glm::vec3 offset;
                 for(int j=0;j<width;j++){
                     u=j/width;
                     v=i/height;
@@ -105,6 +116,11 @@ class Terrain{
                     buffer.push_back((float)i);
                     buffer.push_back(u);
                     buffer.push_back(v);
+                    //grass position offsets
+                    offset.x = -width/2.0f + j;
+                    offset.y = 0.0f;
+                    offset.z = (float)i;
+                    biome.grassBuffer.push_back(offset);
                 }
             }
 

@@ -293,8 +293,8 @@ Terrain plane(10,10);
         //modelShader.use();
         //Models  
         //floorModel.Draw(modelShader);
-        planeShader.use();
-        plane.draw();
+        
+        plane.draw(planeShader);
     
      
 //Skybox

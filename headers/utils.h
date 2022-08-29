@@ -18,7 +18,7 @@ namespace UTIL{
 
     glGenTextures(1,&texture);
     glBindTexture(GL_TEXTURE_2D,texture);
-
+    stbi_set_flip_vertically_on_load(false);
     data = stbi_load(path,&width,&height,&channels,0);
     GLenum format;
     if(channels==4){

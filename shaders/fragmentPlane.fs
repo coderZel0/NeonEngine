@@ -7,5 +7,9 @@ uniform sampler2D diffuse_0;
 out vec4 FragColor;
 
 void main(){
-    FragColor = texture(diffuse_0,Tcoor);
+    vec4 color = texture(diffuse_0,Tcoor);
+    if(color.a<0.1){
+        discard;
+    }
+    FragColor = color;
 }

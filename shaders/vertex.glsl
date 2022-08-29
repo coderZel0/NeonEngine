@@ -2,6 +2,7 @@
 layout (location = 0) in vec3 pos;
 layout (location = 1) in vec2 Texcoor;
 layout (location = 2) in vec3 normal;
+layout (location = 3) in vec3 offset;
 
 out vec2 Tcoor;
 out vec3 Normal;
