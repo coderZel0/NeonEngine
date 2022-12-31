@@ -9,11 +9,13 @@
 #include<vector>
 #include "geometry.h"
 #include "shader.h"
+#include "utils.h"
+#include<time.h>
 
 struct Biome{
     std::vector<glm::vec3> grassBuffer;
-    std::vector<float> rockBuffer;
-    std::vector<float> flowerBuffer;
+    std::vector<glm::vec3> rockBuffer;
+    std::vector<glm::vec3> flowerBuffer;
 };
 
 class Terrain{
@@ -26,6 +28,8 @@ class Terrain{
         Biome biome;
         Geometry quad = Geometry("QUAD");
         bool renderBiomes = true;
+        Shader* biomeShader =nullptr;
+        std::map<std::string,unsigned int> textures;
 
         void setIndices(){
             for(int i=0;i<height;i++){
@@ -41,6 +45,16 @@ class Terrain{
         void loadMap(const char* map){
 
         }
+        
+        void initBiomeTextures(){
+            string texs[5][2] = {{"grass_texture","assets/grass.png"},{"flower_texture1","assets/flower1.png"},{"flower_texture2","assets/flower3.png"},{"stone_texture",""},{"ground_texture",""}};
+            for(auto &tex:texs){
+                if(tex[1]!=""){
+                    textures[tex[0]] = UTIL::loadTexture(tex[1].c_str(),true);
+                }
+                
+            }
+        }
     public:
 
         Terrain(const char* height_map){
@@ -54,26 +68,63 @@ class Terrain{
             std::cout<<width<<"-"<<height;
             
             planeTerrain();
-            quad.initTextures("assets/grass.png");
+            initBiomeTextures();
+            //quad.initTextures("assets/grass.png");
         }
 
-        
+        void setShaderPointer(Shader &shader){
+            this->biomeShader = &shader;
+        }
+
         void draw(Shader &shader){
             shader.use();
             glBindVertexArray(VAO);
 
             glDrawElements(GL_TRIANGLE_STRIP,indices.size(),GL_UNSIGNED_INT,0);
             if(renderBiomes){
-                
+                biomeShader->use();
+                glm::mat4 model = glm::mat4(1.0f);
                 int n = biome.grassBuffer.size();
                 for(int i=0;i<n;i++){
-                    glm::mat4 model = glm::mat4(1.0f);
+                    model = glm::mat4(1.0f);
                     model = glm::translate(model,biome.grassBuffer[i]);
                     model = glm::translate(model,glm::vec3(0.0f,0.5f,0.0f));
-                    shader.setMat4("model",model);
-                    quad.draw();
+                    biomeShader->setMat4("model",model);
+                    quad.draw(textures["grass_texture"]);
+
+                    model = glm::rotate(model,80.0f,glm::vec3(0.0f,1.0f,0.0f));
+                    biomeShader->setMat4("model",model);
+                    quad.draw(textures["grass_texture"]);
+
+
+                    /*model = glm::scale(model,glm::vec3(0.5f,0.5f,0.0f));
+                    model = glm::translate(model,glm::vec3(0.0f,-0.5f,0.0f));
+                    biomeShader->setMat4("model",model);
+                    quad.draw(textures["flower_texture"]);
+
+                    model = glm::rotate(model,-80.0f,glm::vec3(0.0f,1.0f,0.0f));
+                    biomeShader->setMat4("model",model);
+                    quad.draw(textures["flower_texture"]);*/
+
+                    
+                    biomeShader->setFloat("time",glm::sin(glfwGetTime()));
                 }
                 
+                n= biome.flowerBuffer.size();
+                
+                for(int i=0;i<n;i++){
+                   
+                    model = glm::mat4(1.0f);
+                    model = glm::translate(model,biome.flowerBuffer[i]);
+                    
+                    biomeShader->setMat4("model",model);
+                    quad.draw(textures["flower_texture1"]);
+                   
+                    model = glm::rotate(model,80.0f,glm::vec3(0.0f,1.0f,0.0f));
+                    model = glm::translate(model,glm::vec3(0.6f,0.0f,0.4f));
+                    biomeShader->setMat4("model",model);
+                    quad.draw(textures["flower_texture1"]);
+                }
                 
             }
         }
@@ -121,6 +172,21 @@ class Terrain{
                     offset.y = 0.0f;
                     offset.z = (float)i;
                     biome.grassBuffer.push_back(offset);
+                    offset.x = -width/2.0f + j + 0.5f;
+                    biome.grassBuffer.push_back(offset);
+                    offset.x = -width/2.0f +j;
+                    offset.z = i + 0.5f;
+                    biome.grassBuffer.push_back(offset);
+                    offset.x = -width/2.0f +j + 0.5f;
+                    biome.grassBuffer.push_back(offset);
+
+                    //flower buffer
+                    
+                    offset.x = rand()%width + -width/2.0f;
+                    offset.y = 0.0f + 0.5f;
+                    offset.z = rand()%height;
+                    biome.flowerBuffer.push_back(offset);
+                    
                 }
             }
 

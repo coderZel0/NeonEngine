@@ -14,6 +14,7 @@
 #include"modelPremade.h"
 #include "geometry.h"
 #include "terrain.h"
+#include "Light.h"
 
 
 
@@ -65,7 +66,9 @@ int main()
     
     Shader shader("shaders/vertex.glsl", "shaders/fragment_simple.fs");
     Shader modelShader("vertex.vs","fragment.fs");
-    Shader planeShader("shaders/vertex.glsl","shaders/fragmentPlane.fs");
+    Shader planeShader("shaders/vertex.glsl","shaders/fragment_model.fs");
+    Shader biomeShader("shaders/vertex.glsl","shaders/fragmentPlane.fs");
+    Shader lightShader("shaders/vertex.glsl","shaders/fragment_light.fs");
 
     //flip image before loading
     stbi_set_flip_vertically_on_load(true);
@@ -212,9 +215,18 @@ int main()
 //Geometry
     Geometry quad = Geometry("QUAD");
 
+//Light Source
+
+    Light light = Light(glm::vec3(0.0f,10.0f,0.0f));
+    light.setColor(glm::vec3(1.0f,0.0f,0.0f));
+    light.setAmbient(glm::vec3(0.1f,0.1f,0.1f));
+    light.setDiffuse(glm::vec3(0.5f,0.5f,0.5f));
+    light.setSpecular(glm::vec3(1.0f,1.0f,1.0f));
+
 //Terrain
 
 Terrain plane(10,10);
+plane.setShaderPointer(biomeShader);
 //Emission Textures
     unsigned int emissionMap0 = TextureFromFile("emissionMap.jpg","assets/maps/emission");    
 //Texture unit
@@ -223,6 +235,9 @@ Terrain plane(10,10);
     glUniform1i(glGetUniformLocation(shader.ID, "emissionMap0"), 1);
     planeShader.use();
     glUniform1i(glGetUniformLocation(planeShader.ID, "diffuse_0"), 0);
+    biomeShader.use();
+    glUniform1i(glGetUniformLocation(biomeShader.ID, "diffuse_0"), 0);
+
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -267,33 +282,59 @@ Terrain plane(10,10);
         glUniformMatrix4fv(glGetUniformLocation(planeShader.ID, "model"),1,GL_FALSE,glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(planeShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(planeShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-       
+
+        biomeShader.use();
+        glUniformMatrix4fv(glGetUniformLocation(biomeShader.ID, "model"),1,GL_FALSE,glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(biomeShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(biomeShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        
+
         shader.use();
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"),1,GL_FALSE,glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
         
-        
+        lightShader.use();
+        lightShader.setMat4("model",model);
+        lightShader.setMat4("projection",projection);
+        lightShader.setMat4("view",view);
+
+        //Light
+        lightShader.setVec3("light_color",light.getColor());
+        glBindVertexArray(VAO);
+        model = glm::translate(model,light.getPosition());
+        lightShader.setMat4("model",model);
+        glBindTexture(GL_TEXTURE_2D,0);
+        glDrawArrays(GL_TRIANGLES,0,36);
         //set time unifrom
+        shader.use();
         glUniform1f(glGetUniformLocation(shader.ID,"time"),currentTime);
         glBindTexture(GL_TEXTURE_2D,cubeT);
         glBindVertexArray(VAO);
+    
+        model = glm::mat4(1.0f);
+        shader.setMat4("model",model);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D,emissionMap0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+        biomeShader.use();
+        biomeShader.setVec3("light.ambient",light.getAmbience());
+        biomeShader.setVec3("light.diffuse",light.getDiffuse());
+        biomeShader.setVec3("light.color",light.getColor());
+        biomeShader.setVec3("light.position",light.getPosition());
         glBindTexture(GL_TEXTURE_2D,0);
         model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3(1.0f,0.0f,0.0f));
-        shader.setMat4("model",model);
+        model = glm::translate(model,glm::vec3(2.0f,0.0f,0.0f));
+        biomeShader.setMat4("model",model);
         glBindVertexArray(quad.getVAO());
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,cubeT);        
-        //glDrawArrays(GL_TRIANGLES,0,6);
+        glDrawArrays(GL_TRIANGLES,0,6);
 
         //modelShader.use();
         //Models  
         //floorModel.Draw(modelShader);
-        
+      
         plane.draw(planeShader);
     
      

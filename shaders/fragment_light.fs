@@ -17,10 +17,7 @@ void main(){
     
     vec4 col = texture(diffuse_0,Tcoor);// + vec4(0.0,0.1,1.0,0.4);
     //col.a=0.2;
-    vec4 emission = texture(emissionMap0,vec2(Tcoor.x,Tcoor.y+time*0.2)) * vec4(0.0,2.0,0.0,1.0);
-    if(emission.a<0.1){
-        discard;
-    }
-    FragColor = col + emission + light_color;
+    
+    FragColor = col + light_color;
     //FragColor =vec4(1.0,0.0,0.0,0.5);
 }

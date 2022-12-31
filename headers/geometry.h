@@ -21,6 +21,7 @@ class Geometry{
     private:
         unsigned int VAO;
         unsigned int BAO,textureID;
+        
         int sizeBuffer;
         const float* buffer_ptr;
         bool haveTextures = false;
@@ -58,7 +59,7 @@ class Geometry{
         }
 
         void initTextures(const char* texture){
-            textureID = UTIL::loadTexture(texture);
+            textureID = UTIL::loadTexture(texture,true);
             if(textureID) haveTextures=true;
 
         }
@@ -79,6 +80,12 @@ class Geometry{
             glDrawArrays(GL_TRIANGLES,0,6);
         }
         
+        void draw(unsigned int &textureId){
+            glBindVertexArray(VAO);
+            glBindTexture(GL_TEXTURE_2D,textureId);
+            glDrawArrays(GL_TRIANGLES,0,6);
+        }
+
         void draw(Shader &shader){
             shader.use();
 
