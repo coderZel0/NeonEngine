@@ -25,18 +25,19 @@ void main(){
     
     vec3 lightDir = normalize(light.positon-FragPos);
     
-    vec4 color = texture(diffuse_0,Tcoor);
-    if(color.a<0.1){
+    vec4 texel = texture(diffuse_0,Tcoor);
+
+    if(texel.a<0.1){
         discard;
     }
 
     
     //ambient
-    vec3 ambience = light.ambient * vec3(color) * light.color;
+    vec3 ambience = light.ambient  * light.color;
 
     //diffuse
-    float diffuse = max(dot(lightDir,Normal),0);
-    vec3 diff = light.diffuse * diffuse * light.color * vec3(color);
+    float diff = max(dot(lightDir,Normal),0);
+    vec3 diffuse = light.diffuse * diff * light.color;
 
-    FragColor = color *vec4((ambience+diff),1.0);
+    FragColor = texel * vec4((ambience+diffuse),1.0);
 }

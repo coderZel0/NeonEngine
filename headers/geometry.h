@@ -8,14 +8,16 @@
 #include "shader.h"
 
 const float quad[] ={
-        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
-        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,    0.0f,0.0f,-1.0f,
+        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,    0.0f,0.0f,-1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,    0.0f,0.0f,-1.0f,
 
-        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
-        1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,    0.0f,0.0f,-1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,    0.0f,0.0f,-1.0f,
+        1.0f,  0.5f,  0.0f,  1.0f,  0.0f,     0.0f,0.0f,-1.0f
 };
+
+
 
 class Geometry{
     private:
@@ -38,11 +40,14 @@ class Geometry{
             glBindBuffer(GL_ARRAY_BUFFER,BAO);
             glBufferData(GL_ARRAY_BUFFER,sizeBuffer,buffer_ptr,GL_STATIC_DRAW);
 
-            glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(float),(void*)0);
+            glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)0);
             glEnableVertexAttribArray(0);
 
-            glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5*sizeof(float),(void*)(sizeof(float)*3));
+            glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(sizeof(float)*3));
             glEnableVertexAttribArray(1);
+
+            glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(sizeof(float)*5));
+            glEnableVertexAttribArray(2);
             
             glBindBuffer(GL_ARRAY_BUFFER,0);
             glBindVertexArray(0);

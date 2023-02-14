@@ -73,7 +73,9 @@ int main()
     //flip image before loading
     stbi_set_flip_vertically_on_load(true);
 
+    //Models
     //Model floorModel("assets/models/backpack/backpack.obj");
+    //Model god("assets/models/lordvishnu/045-tall-vishnu-sq-stl");
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     //cube
@@ -218,9 +220,9 @@ int main()
 //Light Source
 
     Light light = Light(glm::vec3(0.0f,10.0f,0.0f));
-    light.setColor(glm::vec3(1.0f,0.0f,0.0f));
+    light.setColor(glm::vec3(1.0f,1.0f,1.0f));
     light.setAmbient(glm::vec3(0.1f,0.1f,0.1f));
-    light.setDiffuse(glm::vec3(0.5f,0.5f,0.5f));
+    light.setDiffuse(glm::vec3(0.8f,0.8f,0.8f));
     light.setSpecular(glm::vec3(1.0f,1.0f,1.0f));
 
 //Terrain
@@ -306,6 +308,7 @@ plane.setShaderPointer(biomeShader);
         lightShader.setMat4("model",model);
         glBindTexture(GL_TEXTURE_2D,0);
         glDrawArrays(GL_TRIANGLES,0,36);
+        light.setPosition(glm::vec3(sin(glfwGetTime())*20.0f,light.getPosition().y,cos(glfwGetTime())*30.0f));
         //set time unifrom
         shader.use();
         glUniform1f(glGetUniformLocation(shader.ID,"time"),currentTime);
@@ -333,9 +336,13 @@ plane.setShaderPointer(biomeShader);
 
         //modelShader.use();
         //Models  
+        //model = glm::scale(model,glm::vec3(0.4f));
+        //modelShader.setMat4("model",model);
         //floorModel.Draw(modelShader);
-      
+
         plane.draw(planeShader);
+        //modelShader.use();
+        //god.Draw(modelShader);
     
      
 //Skybox
