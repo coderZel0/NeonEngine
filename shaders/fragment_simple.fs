@@ -21,6 +21,6 @@ void main(){
     if(emission.a<0.1){
         discard;
     }
-    FragColor = col + emission + light_color;
+    FragColor = col * vec4(light_color,1.0) + emission;
     //FragColor =vec4(1.0,0.0,0.0,0.5);
 }

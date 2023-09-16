@@ -27,7 +27,7 @@ class Terrain{
         unsigned int VAO,BAO,EBO;
         Biome biome;
         Geometry quad = Geometry("QUAD");
-        bool renderBiomes = true;
+        bool renderBiomes = false;
         Shader* biomeShader =nullptr;
         std::map<std::string,unsigned int> textures;
 

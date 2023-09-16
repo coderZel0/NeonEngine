@@ -18,6 +18,6 @@ void main(){
     vec4 col = texture(diffuse_0,Tcoor);// + vec4(0.0,0.1,1.0,0.4);
     //col.a=0.2;
     
-    FragColor = col + light_color;
+    FragColor = col + vec4(light_color,1.0);
     //FragColor =vec4(1.0,0.0,0.0,0.5);
 }
